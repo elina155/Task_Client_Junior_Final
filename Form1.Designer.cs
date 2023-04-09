@@ -74,6 +74,7 @@
             this.dateTimePicker1.Name = "dateTimePicker1";
             this.dateTimePicker1.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker1.TabIndex = 5;
+            this.dateTimePicker1.Value = new System.DateTime(2021, 1, 1, 18, 21, 0, 0);
             // 
             // dateTimePicker2
             // 

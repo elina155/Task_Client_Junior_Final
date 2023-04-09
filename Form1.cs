@@ -46,8 +46,15 @@ namespace ClientApp
 
             gd.Rows.Clear();
 
-            var type_name = user_types.Where(User_type => User_type.name.Equals(comboBox1.SelectedItem.ToString()));
-            var Usertemp = users.Where(User => User.name.Contains(textBox1.Text) && User.type_id.Equals(type_name.First().id) && User.last_visit_date >= dateTimePicker1.Value && User.last_visit_date <= dateTimePicker2.Value);
+            var possible_type_names = user_types
+                .Where(User_type => comboBox1.SelectedItem is null 
+                                 || User_type.name.Equals(comboBox1.SelectedItem.ToString()))
+                .Select(t => t.id).ToList();
+            var Usertemp = users
+                .Where(User => User.name.Contains(textBox1.Text) 
+                            && possible_type_names.Contains(User.type_id)
+                            && User.last_visit_date >= dateTimePicker1.Value 
+                            && User.last_visit_date <= dateTimePicker2.Value);
             await Task.Delay(5000);
             foreach (var User in Usertemp)
             {
