@@ -22,27 +22,41 @@ namespace ClientApp
     {
         static string PathUser = Path.Combine(Environment.CurrentDirectory, "Users.json");
         static string PathUserType = Path.Combine(Environment.CurrentDirectory, "UserTypes.json");
-
+        private static List<User> users;
+        private static List<User_type> user_types;
+        bool Access = false;
         private Form _newFormSignIn;
+
+        public static class Buffer
+        {
+            public static String current_login = String.Empty;
+            public static String current_password = String.Empty;
+        }
 
         public async Task Sign_in()
         {
             _newFormSignIn = new Form2(this);
-            _newFormSignIn.Show();
+            _newFormSignIn.ShowDialog();
+            _newFormSignIn.FormClosed -= (sender, e) =>
+            {
+                var Current_User = users.Where(User => User.login.Equals(Buffer.current_login) && User.password.Equals(Buffer.current_password));
+                if (user_types.Where(User_type => User_type.id.Equals(Current_User.First().type_id)).First().allow_edit == true)
+                    Access = true;
+            };
         }
 
         static List<User> ReadUsersFromDB()
         {
             string UserDB = File.ReadAllText(PathUser);
-            List<User> users = JsonConvert.DeserializeObject<List<User>>(UserDB);
+            users = JsonConvert.DeserializeObject<List<User>>(UserDB);
             return users;
         }
 
         private async Task SelectUsers()
         {
             progressBar1.Show();
-            List<User_type> user_types = ReadTypeOfUserFromDB();
-            List<User> users = ReadUsersFromDB();
+            user_types = ReadTypeOfUserFromDB();
+            users = ReadUsersFromDB();
 
             gd.Rows.Clear();
 
@@ -68,7 +82,7 @@ namespace ClientApp
         static List<User_type> ReadTypeOfUserFromDB()
         {
             string User_typeDB = File.ReadAllText(PathUserType);
-            List<User_type> user_types = JsonConvert.DeserializeObject<List<User_type>>(User_typeDB);
+            user_types = JsonConvert.DeserializeObject<List<User_type>>(User_typeDB);
             return user_types;
         }
 
@@ -76,7 +90,7 @@ namespace ClientApp
         {
             InitializeComponent(); 
             progressBar1.Hide();
-            List<User_type> user_types = ReadTypeOfUserFromDB();
+            user_types = ReadTypeOfUserFromDB();
 
             foreach (var User_type in user_types)
                 comboBox1.Items.Add(User_type.name);
@@ -98,7 +112,7 @@ namespace ClientApp
         {
             public int id { get; private set; }
             public string name { get; private set; }
-            private bool allow_edit { get; set; }
+            public bool allow_edit { get; set; }
 
             public User_type(int id, string name, bool allow_edit)
             {
@@ -112,7 +126,7 @@ namespace ClientApp
         {
             public int id { get; private set; }
             public string login { get; private set; }
-            private string password { get; set; }
+            public string password { get; set; }
             public string name { get; private set; }
             public int type_id { get; private set; }
             public DateTime last_visit_date { get; private set; }
