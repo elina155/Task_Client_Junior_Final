@@ -20,14 +20,14 @@ namespace ClientApp
 {
     public partial class Form2 : Form
     {
-        static string PathUser = Path.Combine(Environment.CurrentDirectory, "Users.json");
+        static string PathUser;
         public Form1 _form1;
 
         public Form2(Form1 form1)
         {
             InitializeComponent();
             _form1 = form1;
-
+            PathUser = Form1.Buffer.current_path;
         }
 
         static List<User_OnlyLoginPassword> ReadUsersFromDB()
